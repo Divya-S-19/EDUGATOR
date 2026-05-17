@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edugator – Educational Navigator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <span class="logo-icon">🎓</span>
+            <div class="logo-text">
+                <span class="logo-name">Edugator</span>
+                <span class="logo-tagline">Educational Navigator</span>
+            </div>
+        </div>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">✕</button>
+    </div>
+
+    <div class="sidebar-section">
+        <p class="sidebar-label">EXPLORE TOPICS</p>
+        <div class="category-list" id="categoryList">
+            <!-- Populated by JS from /api/categories -->
+            <div class="cat-skeleton"></div>
+            <div class="cat-skeleton"></div>
+            <div class="cat-skeleton"></div>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <p class="sidebar-label">QUICK QUESTIONS</p>
+        <div class="suggestion-list" id="suggestionList">
+            <!-- Populated by JS from /api/suggestions -->
+        </div>
+    </div>
+
+    <div class="sidebar-footer">
+        <button class="clear-btn" id="clearChat">
+            <span>🗑️</span> Clear Conversation
+        </button>
+        <p class="version-tag">v1.0 · Powered by Gemini + LangChain</p>
+    </div>
+</aside>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════ -->
+<main class="main">
+
+    <!-- Top Nav Bar -->
+    <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Open sidebar">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="topbar-title">
+            <span class="topbar-logo">🎓</span>
+            <span>Edugator</span>
+        </div>
+        <div class="topbar-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Online</span>
+        </div>
+    </header>
+
+    <!-- Chat Area -->
+    <div class="chat-container" id="chatContainer">
+
+        <!-- Welcome screen (shown when chat is empty) -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-glow"></div>
+            <div class="welcome-icon">🎓</div>
+            <h1 class="welcome-title"> Hii! I'm Edugator</h1>
+            <p class="welcome-sub">Your AI guide for education and career decisions in India.<br/>Ask me anything about courses, exams, careers, or skills.</p>
+
+            <div class="welcome-cards">
+                <div class="welcome-card" data-query="What should I choose after 10th grade – Science or Commerce?">
+                    <span class="card-icon">🎯</span>
+                    <span class="card-text">After 10th stream selection</span>
+                </div>
+                <div class="welcome-card" data-query="How do I prepare for JEE Main exam?">
+                    <span class="card-icon">📐</span>
+                    <span class="card-text">JEE Main preparation tips</span>
+                </div>
+                <div class="welcome-card" data-query="What are the career options after 12th Arts?">
+                    <span class="card-icon">🎨</span>
+                    <span class="card-text">Career options after Arts</span>
+                </div>
+                <div class="welcome-card" data-query="How to get a government job after graduation in Tamil Nadu?">
+                    <span class="card-icon">🏛️</span>
+                    <span class="card-text">Government job guidance</span>
+                </div>
+                <div class="welcome-card" data-query="What skills do I need to get an IT job at a software company?">
+                    <span class="card-icon">💻</span>
+                    <span class="card-text">IT career skills</span>
+                </div>
+                <div class="welcome-card" data-query="Tell me about UPSC Civil Services exam preparation">
+                    <span class="card-icon">📋</span>
+                    <span class="card-text">UPSC preparation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat messages will be appended here -->
+        <div class="chat-messages" id="chatMessages"></div>
+
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+        <div class="input-wrapper">
+            <textarea
+                id="userInput"
+                class="input-box"
+                placeholder="Ask about courses, exams, careers… (Press Enter to send)"
+                rows="1"
+                maxlength="1000"
+                aria-label="Type your question"
+            ></textarea>
+            <button class="send-btn" id="sendBtn" aria-label="Send message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+        <p class="input-hint">Edugator can make mistakes. Verify important details with official sources.</p>
+    </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SOURCE MODAL
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="sourceModal">
+        <div class="modal-header">
+            <h3>📚 Knowledge Sources</h3>
+            <button class="modal-close" id="modalClose">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
